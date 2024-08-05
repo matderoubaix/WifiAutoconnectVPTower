@@ -88,7 +88,8 @@ def connectToWifi(network):
         if network.ssid[i].isdigit() and (network.ssid[i+1].isdigit() or network.ssid[i-1].isdigit()):
             serieChiffres.append(network.ssid[i])
     
-    password = 'vptower'.join(serieChiffres)
+    password = 'vptower' + ''.join(serieChiffres)
+    print(f"Password : {password}")
 
     # password = network.ssid[:11]
 
