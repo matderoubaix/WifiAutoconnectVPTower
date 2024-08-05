@@ -80,7 +80,17 @@ def connectToWifi(network):
     profile.akm.append(const.AKM_TYPE_WPA2PSK)
     profile.cipher = const.CIPHER_TYPE_CCMP
 
-    password = network.ssid[:11]
+
+    # Création du mot de passe
+    # Trouver une série de 4 chiffres
+    serieChiffres = []
+    for i in range(len(network.ssid)):
+        if network.ssid[i].isdigit() and (network.ssid[i+1].isdigit() or network.ssid[i-1].isdigit()):
+            serieChiffres.append(network.ssid[i])
+    
+    password = 'vptower'.join(serieChiffres)
+
+    # password = network.ssid[:11]
 
     profile.key = password
     iface.remove_all_network_profiles()
