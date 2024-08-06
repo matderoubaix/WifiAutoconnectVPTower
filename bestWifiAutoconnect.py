@@ -33,7 +33,7 @@ def findBestWifi(listOfNetworks):
     for network in listOfNetworks:
         if network.akm == [4]:
             networkName = network.ssid
-            if networkName.startswith("vptower"):
+            if networkName.startswith("vptower") or networkName.startswith("v.p.tower"):
                 protectedNetworks.append(network)
                 if network.freq < 3000000:
                     protectedNetworks2G.append(network)
@@ -65,11 +65,15 @@ def findBestWifi(listOfNetworks):
 
     if bestNetwork:
         print(f"Best network: {bestNetwork.ssid}, Signal: {bestNetwork.signal}, Frequency: {bestNetwork.freq}, IsProtected: {bestNetwork.akm}, BSSID: {bestNetwork.bssid}")
-        return bestNetwork
+        if bestNetwork.ssid.startswith("vptower"):
+            bestNetworkPrefix = "vptower"
+        else:
+            bestNetworkPrefix = "v.p.tower"
+        return bestNetwork, bestNetworkPrefix
     else:
         print("No best network found.")
 
-def connectToWifi(network):
+def connectToWifi(network,networkPrefix):
     wifi = pywifi.PyWiFi()
     iface = wifi.interfaces()[0]
     iface.disconnect()
@@ -88,7 +92,7 @@ def connectToWifi(network):
         if network.ssid[i].isdigit() and (network.ssid[i+1].isdigit() or network.ssid[i-1].isdigit()):
             serieChiffres.append(network.ssid[i])
     
-    password = 'vptower' + ''.join(serieChiffres)
+    password = networkPrefix + ''.join(serieChiffres)
     print(f"Password : {password}")
 
     # password = network.ssid[:11]
@@ -115,11 +119,11 @@ if __name__ == "__main__":
         print(f"An error occurred: {e}")
 
     try:
-        networkCandidate = findBestWifi(scanResults)
+        networkCandidate, networkCandidatePrefix = findBestWifi(scanResults)
     except Exception as e:
         print(f"An error occurred: {e}")
 
     try:
-        connectToWifi(networkCandidate)
+        connectToWifi(networkCandidate, networkCandidatePrefix)
     except Exception as e:
         print(f"An error occurred: {e}")
